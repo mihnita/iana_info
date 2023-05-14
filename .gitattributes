@@ -1,0 +1,6 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# OS specific scripts should have the OS specific eol
+*.bat   text eol=crlf
+*.sh    text eol=lf
