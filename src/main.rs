@@ -4,8 +4,18 @@ use std::fs::File;
 use std::io::{self, BufRead, BufReader};
 use std::path::{Path, PathBuf};
 use std::process::exit;
+use atty::Stream;
 
 const DEFAULT_IANA_FILE_NAME:&str = "language-subtag-registry";
+static mut USE_COLORS:bool = false;
+
+fn set_use_colors(use_col:bool) {
+    unsafe { USE_COLORS = use_col };
+}
+
+fn get_use_colors() -> bool {
+    unsafe { return USE_COLORS };
+}
 
 fn read_lines(data_path:&Path) -> io::Lines<BufReader<File>> {
     let file = File::open(data_path).unwrap(); 
@@ -47,7 +57,11 @@ fn print_record(section: &Vec<String>, to_matchm: &HashMap<String, String>) {
             let parts = line.split_once(": ");
             let prefix = parts.unwrap().0;
             let postfix = parts.unwrap().1;
-            println!("  \x1b[97m{}:\x1b[m {}", prefix, postfix);
+            if get_use_colors() {
+                println!("  \x1b[93m{}:\x1b[m {}", prefix, postfix);
+            } else {
+                println!("  {}: {}", prefix, postfix);
+            }
         }
     }
 }
@@ -92,6 +106,8 @@ fn args_to_map(args: Vec<String>) -> HashMap<String, String> {
             "-ss"    | "--suppress-script" => key = "Suppress-Script",
             "-ta"    | "--tag"             => key = "Tag",
             "-t"     | "--type"            => key = "Type",
+            "--color=always"               => set_use_colors(true),
+            "--color=never"                => set_use_colors(false),
             "-h"     | "--help"            => print_help(),
             _ => {
                 if !key.is_empty() {
@@ -135,6 +151,12 @@ fn main() {
     // let data_path = Path::new(&args[0]).parent().unwrap().join("language-subtag-registry");
     // dbg!(&data_path);
 
+    if atty::is(Stream::Stdout) {
+        set_use_colors(true);
+    } else {
+        set_use_colors(false);
+    }
+
     let to_matchm = args_to_map(args);
     if to_matchm.is_empty() {
         print_help();
@@ -163,7 +185,11 @@ fn main() {
     }
     print_record(&current_rec, &to_matchm);
     println!("%%");
-    println!("\x1b[32mDONE!\x1b[m");
+    if get_use_colors() {
+        println!("\x1b[32mDONE!\x1b[m");
+    } else {
+        println!("DONE!");
+    }
 }
 
 /*
@@ -185,8 +211,8 @@ fn main() {
 /*
 TODO:
     * find data path: next to exe, in folder next to exe, env variable, current folder, command line option
-    * --color (and detect, for auto)
     * search
+        * color the found text
         * case insensitive search
         * Tag (used in grandfathered) vs Subtag (used everywhere else)
         * any field
