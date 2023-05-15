@@ -85,6 +85,8 @@ fn print_help() {
     println!("  -t,      --tag             <value>");
     println!("  -ty,     --type            <value>");
     println!("      one of: extlang, grandfathered, language, redundant, region, script, variant");
+    println!("--color=always   : force to always use colors");
+    println!("--color=never    : force to never use colors");
     println!("where the value can be a substring or exact match if it starts with '='");
     exit(1);
 }
