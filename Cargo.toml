@@ -1,0 +1,2 @@
+[workspace]
+members = ["iana_info", "unicode_info"]
