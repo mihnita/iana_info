@@ -7,7 +7,8 @@ cargo clean
 cargo build --release
 
 mkdir ~/bin
-cp language-subtag-registry ~/bin
+mkdir ~/bin/udata
+cp language-subtag-registry ~/bin/udata
 cp target/release/iana_info ~/bin/ii
 
 rm language-subtag-registry

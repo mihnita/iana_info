@@ -6,7 +6,8 @@ cargo build --release
 
 pause
 
-copy /b/v language-subtag-registry     D:\!
+md D:\!\udata
+copy /b/v language-subtag-registry     D:\!\udata
 copy /b/v target\release\iana_info.exe D:\!\ii.exe
 
 del language-subtag-registry

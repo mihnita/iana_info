@@ -143,6 +143,7 @@ fn get_data_path() -> PathBuf {
 
     return env::current_exe().unwrap()
             .parent().unwrap()
+            .join("udata")
             .join(DEFAULT_IANA_FILE_NAME);
 }
 
