@@ -1,0 +1,151 @@
+
+0, "Code value",
+
+1, "Character name",
+
+2, "General Category" (gc)
+	C                                ; Other                            # Cc | Cf | Cn | Co | Cs
+	Cc                               ; Control                          ; cntrl
+	Cf                               ; Format
+	Cn                               ; Unassigned
+	Co                               ; Private_Use
+	Cs                               ; Surrogate
+	L                                ; Letter                           # Ll | Lm | Lo | Lt | Lu
+	LC                               ; Cased_Letter                     # Ll | Lt | Lu
+	Ll                               ; Lowercase_Letter
+	Lm                               ; Modifier_Letter
+	Lo                               ; Other_Letter
+	Lt                               ; Titlecase_Letter
+	Lu                               ; Uppercase_Letter
+	M                                ; Mark                             ; Combining_Mark                   # Mc | Me | Mn
+	Mc                               ; Spacing_Mark
+	Me                               ; Enclosing_Mark
+	Mn                               ; Nonspacing_Mark
+	N                                ; Number                           # Nd | Nl | No
+	Nd                               ; Decimal_Number                   ; digit
+	Nl                               ; Letter_Number
+	No                               ; Other_Number
+	P                                ; Punctuation                      ; punct                            # Pc | Pd | Pe | Pf | Pi | Po | Ps
+	Pc                               ; Connector_Punctuation
+	Pd                               ; Dash_Punctuation
+	Pe                               ; Close_Punctuation
+	Pf                               ; Final_Punctuation
+	Pi                               ; Initial_Punctuation
+	Po                               ; Other_Punctuation
+	Ps                               ; Open_Punctuation
+	S                                ; Symbol                           # Sc | Sk | Sm | So
+	Sc                               ; Currency_Symbol
+	Sk                               ; Modifier_Symbol
+	Sm                               ; Math_Symbol
+	So                               ; Other_Symbol
+	Z                                ; Separator                        # Zl | Zp | Zs
+	Zl                               ; Line_Separator
+	Zp                               ; Paragraph_Separator
+	Zs                               ; Space_Separator
+
+3, "Canonical Combining Class" (ccc)
+	ccc;   0; NR                         ; Not_Reordered
+	ccc;   1; OV                         ; Overlay
+	ccc;   6; HANR                       ; Han_Reading
+	ccc;   7; NK                         ; Nukta
+	ccc;   8; KV                         ; Kana_Voicing
+	ccc;   9; VR                         ; Virama
+	ccc;  10; CCC10                      ; CCC10
+	ccc;  11; CCC11                      ; CCC11
+	ccc;  12; CCC12                      ; CCC12
+	ccc;  13; CCC13                      ; CCC13
+	ccc;  14; CCC14                      ; CCC14
+	ccc;  15; CCC15                      ; CCC15
+	ccc;  16; CCC16                      ; CCC16
+	ccc;  17; CCC17                      ; CCC17
+	ccc;  18; CCC18                      ; CCC18
+	ccc;  19; CCC19                      ; CCC19
+	ccc;  20; CCC20                      ; CCC20
+	ccc;  21; CCC21                      ; CCC21
+	ccc;  22; CCC22                      ; CCC22
+	ccc;  23; CCC23                      ; CCC23
+	ccc;  24; CCC24                      ; CCC24
+	ccc;  25; CCC25                      ; CCC25
+	ccc;  26; CCC26                      ; CCC26
+	ccc;  27; CCC27                      ; CCC27
+	ccc;  28; CCC28                      ; CCC28
+	ccc;  29; CCC29                      ; CCC29
+	ccc;  30; CCC30                      ; CCC30
+	ccc;  31; CCC31                      ; CCC31
+	ccc;  32; CCC32                      ; CCC32
+	ccc;  33; CCC33                      ; CCC33
+	ccc;  34; CCC34                      ; CCC34
+	ccc;  35; CCC35                      ; CCC35
+	ccc;  36; CCC36                      ; CCC36
+	ccc;  84; CCC84                      ; CCC84
+	ccc;  91; CCC91                      ; CCC91
+	ccc; 103; CCC103                     ; CCC103
+	ccc; 107; CCC107                     ; CCC107
+	ccc; 118; CCC118                     ; CCC118
+	ccc; 122; CCC122                     ; CCC122
+	ccc; 129; CCC129                     ; CCC129
+	ccc; 130; CCC130                     ; CCC130
+	ccc; 132; CCC132                     ; CCC132
+	ccc; 133; CCC133                     ; CCC133 # RESERVED
+	ccc; 200; ATBL                       ; Attached_Below_Left
+	ccc; 202; ATB                        ; Attached_Below
+	ccc; 214; ATA                        ; Attached_Above
+	ccc; 216; ATAR                       ; Attached_Above_Right
+	ccc; 218; BL                         ; Below_Left
+	ccc; 220; B                          ; Below
+	ccc; 222; BR                         ; Below_Right
+	ccc; 224; L                          ; Left
+	ccc; 226; R                          ; Right
+	ccc; 228; AL                         ; Above_Left
+	ccc; 230; A                          ; Above
+	ccc; 232; AR                         ; Above_Right
+	ccc; 233; DB                         ; Double_Below
+	ccc; 234; DA                         ; Double_Above
+	ccc; 240; IS                         ; Iota_Subscript
+
+4, "Bidirectional category",
+# Bidi_Class (bc)
+
+bc ; AL                               ; Arabic_Letter
+bc ; AN                               ; Arabic_Number
+bc ; B                                ; Paragraph_Separator
+bc ; BN                               ; Boundary_Neutral
+bc ; CS                               ; Common_Separator
+bc ; EN                               ; European_Number
+bc ; ES                               ; European_Separator
+bc ; ET                               ; European_Terminator
+bc ; FSI                              ; First_Strong_Isolate
+bc ; L                                ; Left_To_Right
+bc ; LRE                              ; Left_To_Right_Embedding
+bc ; LRI                              ; Left_To_Right_Isolate
+bc ; LRO                              ; Left_To_Right_Override
+bc ; NSM                              ; Nonspacing_Mark
+bc ; ON                               ; Other_Neutral
+bc ; PDF                              ; Pop_Directional_Format
+bc ; PDI                              ; Pop_Directional_Isolate
+bc ; R                                ; Right_To_Left
+bc ; RLE                              ; Right_To_Left_Embedding
+bc ; RLI                              ; Right_To_Left_Isolate
+bc ; RLO                              ; Right_To_Left_Override
+bc ; S                                ; Segment_Separator
+bc ; WS                               ; White_Space
+
+5, "Character decomposition mapping",
+6, "Decimal digit value",
+7, "Digit value",
+8, "Numeric value",
+
+8, "Mirrored",
+	Bidi_M; N                             ; No                               ; F                                ; False
+	Bidi_M; Y                             ; Yes                              ; T                                ; True
+
+10, "Unicode 1.0 Name",
+11, "10646 comment field",
+12, "Uppercase mapping",
+13, "Lowercase mapping",
+14, "Titlecase mapping",
+
+
+fn main() {
+    println!("Hello, world!");
+}
