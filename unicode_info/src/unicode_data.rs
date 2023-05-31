@@ -1,3 +1,11 @@
+use crate::color_utils;
+use crate::file_utils;
+use crate::help;
+
+const FILE_UNICODE_DATA:&str = "UnicodeData.txt";
+
+const BAD_CODE_POINT:u32 = 0xffffffff;
+
 // Bidi_Class (bc)
 fn bc_to_string(short_id:&str) -> &str {
     return match short_id.trim() {
@@ -148,31 +156,91 @@ fn bool_to_string(short_id:&str) -> &str {
     }
 }
 
-fn dump_value2(label:&str, value:&str, disp_func: fn(&str) -> &str) {
+fn dump_value2(label:&str, value:&str, disp_func: fn(&str) -> &str, flags:&help::Flags) {
     if !value.is_empty() {
-        println!("  \x1b[93m{} :\x1b[m {} ; {}", label, value, disp_func(value));
+        println!("  {} : {} ; {}", color_utils::label(&label.to_string(), flags), value, disp_func(value));
     }
 }
 
-fn dump_value1(label:&str, value:&str) {
+fn dump_value1(label:&str, value:&str, flags:&help::Flags) {
     if !value.is_empty() {
-        println!("  \x1b[93m{} :\x1b[m {}", label, value);
+        println!("  {} : {}", color_utils::label(&label.to_string(), flags), value);
     }
 }
 
-pub fn write_cp_entry(parts: Vec<&str>) {
-    dump_value1("Character name (na)            ", parts[1]);
-    dump_value2("General Category (gc)          ", parts[2], gc_to_string);
-    dump_value2("Canonical Combining Class (ccc)", parts[3], ccc_to_string);
-    dump_value2("Bidirectional Class (bc)       ", parts[4], bc_to_string);
-    dump_value1("Decomposition Mapping (dm)     ", parts[5]);
-    dump_value1("Decimal digit value            ", parts[6]);
-    dump_value1("Digit value                    ", parts[7]);
-    dump_value1("Numeric value (nv)             ", parts[8]);
-    dump_value2("Mirrored (Bidi_M)              ", parts[9], bool_to_string);
-    dump_value1("Unicode 1.0 Name (na1)         ", parts[10]);
-    dump_value1("10646 comment field            ", parts[11]);
-    dump_value1("Simple Uppercase mapping (suc) ", parts[12]);
-    dump_value1("Simple Lowercase mapping (slc) ", parts[13]);
-    dump_value1("Simple Titlecase mapping (stc) ", parts[14]);
+fn write_cp_entry(parts: Vec<&str>, flags:&help::Flags) {
+    if flags.show_unicode_data_na {
+        dump_value1("Character Name (na)            ", parts[1], flags);
+    }
+    if flags.show_unicode_data_gc {
+        dump_value2("General Category (gc)          ", parts[2], gc_to_string, flags);
+    }
+    if flags.show_unicode_data_ccc {
+        dump_value2("Canonical Combining Class (ccc)", parts[3], ccc_to_string, flags);
+    }
+    if flags.show_unicode_data_bc {
+        dump_value2("Bidirectional Class (bc)       ", parts[4], bc_to_string, flags);
+    }
+    if flags.show_unicode_data_dm {
+        dump_value1("Decomposition Mapping (dm)     ", parts[5], flags);
+    }
+    if flags.show_unicode_data_ddv {
+        dump_value1("Decimal Digit Value (ddv)      ", parts[6], flags);
+    }
+    if flags.show_unicode_data_dv {
+        dump_value1("Digit Value (dv)               ", parts[7], flags);
+    }
+    if flags.show_unicode_data_nv {
+        dump_value1("Numeric Value (nv)             ", parts[8], flags);
+    }
+    if flags.show_unicode_data_mir {
+        dump_value2("Mirrored (mir)                 ", parts[9], bool_to_string, flags);
+    }
+    if flags.show_unicode_data_na1 {
+        dump_value1("Unicode 1.0 Name (na1)         ", parts[10], flags);
+    }
+    if flags.show_unicode_data_iso {
+        dump_value1("10646 Comment Field (iso)      ", parts[11], flags);
+    }
+    if flags.show_unicode_data_suc {
+        dump_value1("Simple Uppercase Mapping (suc) ", parts[12], flags);
+    }
+    if flags.show_unicode_data_slc {
+        dump_value1("Simple Lowercase Mapping (slc) ", parts[13], flags);
+    }
+    if flags.show_unicode_data_stc {
+        dump_value1("Simple Titlecase Mapping (stc) ", parts[14], flags);
+    }
+}
+
+pub fn get_unicode_data(code_point:u32, flags:&help::Flags) {
+    let cp_str = format!("{:04X}", code_point);
+    let data_path = file_utils::get_data_path(&FILE_UNICODE_DATA.to_string());
+    let lines = file_utils::read_lines(&data_path);
+    let mut start_cp:u32 = BAD_CODE_POINT;
+    for line in lines {
+        let line_content = line.unwrap();
+        if line_content.starts_with(&cp_str) {
+            let parts: Vec<&str> = line_content.split(';').collect();
+            if parts[0].eq(&cp_str) {
+                write_cp_entry(parts, flags);
+                return;
+            }
+        } else if line_content.contains(" First>;") {
+            let parts: Vec<&str> = line_content.split(';').collect();
+            start_cp = u32::from_str_radix(&parts[0], 16).unwrap();
+        } else if line_content.contains(" Last>;") {
+            let mut parts: Vec<&str> = line_content.split(';').collect();
+            let end_cp = u32::from_str_radix(&parts[0], 16).unwrap();
+            if start_cp != BAD_CODE_POINT {
+                if start_cp <= code_point && code_point <= end_cp {
+                    let tmp = parts[1].replace(", Last>", ">");
+                    parts[1] = tmp.as_str();
+                    write_cp_entry(parts, flags);
+                    return;
+                }
+            }
+            start_cp = BAD_CODE_POINT;
+        }
+    }
 }
