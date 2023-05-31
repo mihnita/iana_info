@@ -16,10 +16,12 @@ fn read_lines(data_path:&Path) -> io::Lines<BufReader<File>> {
 }
 
 fn get_data_path(file_name:&String) -> PathBuf {
-    return env::current_exe().unwrap()
+    let result = env::current_exe().unwrap()
         .parent().unwrap()
         .join("udata")
         .join(file_name);
+    // print!("{:?}", &result);
+    return result;
 }
 
 // Bidi_Class (bc)
@@ -185,7 +187,7 @@ fn dump_value1(label:&str, value:&str) {
 }
 
 fn write_cp_entry(parts: Vec<&str>) {
-    dump_value1("Character name                 ", parts[1]);
+    dump_value1("Character name (na)            ", parts[1]);
     dump_value2("General Category (gc)          ", parts[2], gc_to_string);
     dump_value2("Canonical Combining Class (ccc)", parts[3], ccc_to_string);
     dump_value2("Bidirectional Class (bc)       ", parts[4], bc_to_string);
@@ -237,48 +239,27 @@ fn get_unicode_data(code_point:u32) {
 fn write_utf(code_point:u32) {
     println!("  \x1b[93mDecimal :\x1b[m {}", code_point);
 
+    let ch = char::from_u32(code_point).unwrap();
+
     // UTF-8
-    print!("  \x1b[93mUTF-8   :\x1b[m ");
-    if code_point < 0x80 { // One byte UTF-8 char
-        println!("{:02X}", code_point);
-    } else if code_point < 0x0800 { // Two byte UTF-8 char
-        println!("{:02X} {:02X}",
-            0b1100_0000 | 0b0001_1111 & code_point >> 6,
-            0b1000_0000 | 0b0011_1111 & code_point
-        );
-    } else if code_point < 0x010000 { // Three byte UTF-8 char
-        println!("{:02X} {:02X} {:02X}",
-            0b1110_0000 | 0b0000_1111 & code_point >> 12,
-            0b1000_0000 | 0b0011_1111 & code_point >> 6,
-            0b1000_0000 | 0b0011_1111 & code_point
-        );
-    } else if code_point < 0x110000 { // Four byte UTF-8 char
-        println!("{:02X} {:02X} {:02X} {:02X}",
-            0b1111_0000 | 0b0000_0111 & code_point >> 18,
-            0b1000_0000 | 0b0011_1111 & code_point >> 12,
-            0b1000_0000 | 0b0011_1111 & code_point >> 6,
-            0b1000_0000 | 0b0011_1111 & code_point
-        );
-    } else {
-        println!("Invalid codepoint (above 0x10FFFF)");
+    print!("  \x1b[93mUTF-8   :\x1b[m");
+    let mut utf8_bytes = [0; 10];
+    ch.encode_utf8(&mut utf8_bytes);
+    for i in 0..ch.len_utf8() {
+        print!(" {:02X}", utf8_bytes[i]);
     }
+    println!();
 
     // UTF-16
-    print!("  \x1b[93mUTF-16  :\x1b[m ");
-    if code_point >= 0xD800 && code_point <= 0xDFFF {
-        println!("Invalid codepoint (in the surrogate range)");
-	} else if code_point > 0x10FFFF {
-	    println!("Invalid codepoint (above 0x10FFFF)");
-    } else if code_point <= 0xFFFF {
-        println!("{:04X}", code_point);
-	} else {
-	    /* 0xFFFF - 0x10FFFF, surrogates excluded */
-	    let code_point1 = code_point - 0x10000;
-        println!("{:04X} {:04X}", 
-	        ((code_point1 >> 10) + 0xD800),
-	        ((code_point1 & 0x3FF) + 0xDC00));
+    print!("  \x1b[93mUTF-16  :\x1b[m");
+    let mut utf16_code_units = [0; 10];
+    ch.encode_utf16(&mut utf16_code_units);
+    for i in 0..ch.len_utf16() {
+        print!(" {:04X}", utf16_code_units[i]);
     }
+    println!();
 
+    // UTF-32
     println!("  \x1b[93mUTF-32  :\x1b[m {:08X}", code_point);
 }
 
@@ -322,13 +303,18 @@ fn get_from_namelist(code_point:u32) {
 }
 
 fn get_char_info(code_point:u32) {
-    println!("===== {} ==========", char::from_u32(code_point).unwrap());
-    write_utf(code_point);
-    println!("  ------------------");
-    get_block_name(code_point);
-    println!("  ------------------");
-    get_unicode_data(code_point);
-    get_from_namelist(code_point);
+    let chr = char::from_u32(code_point);
+    if chr == None {
+        println!("===== Invalid code point: {:04X}h ==========", code_point);
+    } else {
+        println!("===== {} ==========", chr.unwrap());
+        write_utf(code_point);
+        println!("  ------------------");
+        get_block_name(code_point);
+        println!("  ------------------");
+        get_unicode_data(code_point);
+        get_from_namelist(code_point);
+    }
 }
 
 fn main() {
@@ -346,26 +332,36 @@ fn main() {
             }
         }
     }
+}
 
-    // for c in "Hello 日本語 💩".chars() {
-    //     get_char_info(c as u32);
-    // }
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    // get_char_info(0x0048); // LATIN CAPITAL LETTER H;Lu;0;L;;;;;N;;;;0068;
-    // get_char_info(0x00FB); // LATIN SMALL LETTER U WITH CIRCUMFLEX;Ll;0;L;0075 0302;;;;N;LATIN SMALL LETTER U CIRCUMFLEX;;00DB;;00DB
-    // get_char_info(0x00DA);
-    // get_char_info(0x0664); // ARABIC-INDIC DIGIT FOUR;Nd;0;AN;;4;4;4;N;;;;;
-    // get_char_info(0x0218); // LATIN CAPITAL LETTER S WITH COMMA BELOW;Lu;0;L;0053 0326;;;;N;;;;0219;
-    // get_char_info(0x2743); // HEAVY TEARDROP-SPOKED PINWHEEL ASTERISK;So;0;ON;;;;;N;;;;;
-    // get_char_info(0xA64F); // CYRILLIC SMALL LETTER NEUTRAL YER;Ll;0;L;;;;;N;;;A64E;;A64E
-    // get_char_info(0xFD13); // ARABIC LIGATURE AIN WITH ALEF MAKSURA FINAL FORM;Lo;0;AL;<final> 0639 0649;;;;N;;;;;
-    // get_char_info(0x1FBC3); // RIGHT THIRD WHITE RIGHT POINTING INDEX;So;0;ON;;;;;N;;;;;
-    // get_char_info(0x2F80B); // CJK COMPATIBILITY IDEOGRAPH-2F80B;Lo;0;L;50CF;;;;N;;;;;
-    // get_char_info(0xF0000); // <Plane 15 Private Use, First>;Co;0;L;;;;;N;;;;;
-    // get_char_info(0xFFF00); // <Plane 15 Private Use, ?>;Co;0;L;;;;;N;;;;;
-    // get_char_info(0xFFFFD); // <Plane 15 Private Use, Last>;Co;0;L;;;;;N;;;;;
-    // get_char_info(0x100000); // <Plane 16 Private Use, First>;Co;0;L;;;;;N;;;;;
-    // get_char_info(0x10FFFD); // <Plane 16 Private Use, Last>;Co;0;L;;;;;N;;;;;
+    #[test]
+    fn test() {
+        for c in "Hello 日本語 💩".chars() {
+            get_char_info(c as u32);
+        }
+        get_char_info(0x0048); // LATIN CAPITAL LETTER H;Lu;0;L;;;;;N;;;;0068;
+        get_char_info(0x00FB); // LATIN SMALL LETTER U WITH CIRCUMFLEX;Ll;0;L;0075 0302;;;;N;LATIN SMALL LETTER U CIRCUMFLEX;;00DB;;00DB
+        get_char_info(0x00DA);
+        get_char_info(0x0664); // ARABIC-INDIC DIGIT FOUR;Nd;0;AN;;4;4;4;N;;;;;
+        get_char_info(0x0218); // LATIN CAPITAL LETTER S WITH COMMA BELOW;Lu;0;L;0053 0326;;;;N;;;;0219;
+        get_char_info(0x2743); // HEAVY TEARDROP-SPOKED PINWHEEL ASTERISK;So;0;ON;;;;;N;;;;;
+        get_char_info(0xA64F); // CYRILLIC SMALL LETTER NEUTRAL YER;Ll;0;L;;;;;N;;;A64E;;A64E
+        get_char_info(0xFD13); // ARABIC LIGATURE AIN WITH ALEF MAKSURA FINAL FORM;Lo;0;AL;<final> 0639 0649;;;;N;;;;;
+        get_char_info(0x1FBC3); // RIGHT THIRD WHITE RIGHT POINTING INDEX;So;0;ON;;;;;N;;;;;
+        get_char_info(0x2F80B); // CJK COMPATIBILITY IDEOGRAPH-2F80B;Lo;0;L;50CF;;;;N;;;;;
+        get_char_info(0xF0000); // <Plane 15 Private Use, First>;Co;0;L;;;;;N;;;;;
+        get_char_info(0xFFF00); // <Plane 15 Private Use, ?>;Co;0;L;;;;;N;;;;;
+        get_char_info(0xFFFFD); // <Plane 15 Private Use, Last>;Co;0;L;;;;;N;;;;;
+        get_char_info(0x100000); // <Plane 16 Private Use, First>;Co;0;L;;;;;N;;;;;
+        get_char_info(0x10FFFD); // <Plane 16 Private Use, Last>;Co;0;L;;;;;N;;;;;
+        get_char_info(0xD83D);
+        get_char_info(0xDCA9);
+        get_char_info(0x12FAFD);
+    }
 }
 
 /* TODO:
