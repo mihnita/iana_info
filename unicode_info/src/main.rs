@@ -322,7 +322,7 @@ fn get_from_namelist(code_point:u32) {
 }
 
 fn get_char_info(code_point:u32) {
-    println!("==================");
+    println!("===== {} ==========", char::from_u32(code_point).unwrap());
     write_utf(code_point);
     println!("  ------------------");
     get_block_name(code_point);
@@ -332,15 +332,24 @@ fn get_char_info(code_point:u32) {
 }
 
 fn main() {
-    let re_hex_cp:Regex = Regex::new(r"^([0-9A-F]{4,6})$").unwrap();
+    let re_hex_cp:Regex = Regex::new(r"^([0-9A-Fa-f]{4,6})$").unwrap();
     let args: Vec<String> = env::args().collect();
 
     for arg in &args {
-        for cap in re_hex_cp.captures_iter(arg.as_str()) {
-            let code_point = u32::from_str_radix(&cap[0], 16).unwrap();
+        let sarg = arg.as_str();
+        if re_hex_cp.is_match(sarg) {
+            let code_point = u32::from_str_radix(&sarg, 16).unwrap();
             get_char_info(code_point);
+        } else {
+            for ch in sarg.chars() {
+                get_char_info(ch as u32);
+            }
         }
     }
+
+    // for c in "Hello 日本語 💩".chars() {
+    //     get_char_info(c as u32);
+    // }
 
     // get_char_info(0x0048); // LATIN CAPITAL LETTER H;Lu;0;L;;;;;N;;;;0068;
     // get_char_info(0x00FB); // LATIN SMALL LETTER U WITH CIRCUMFLEX;Ll;0;L;0075 0302;;;;N;LATIN SMALL LETTER U CIRCUMFLEX;;00DB;;00DB
