@@ -28,7 +28,16 @@ fn vec_to_map(record: &Vec<String>) -> HashMap<String, String> {
         let parts = line.split_once(": ");
         let prefix = parts.unwrap().0;
         let suffix = parts.unwrap().1;
-        result.insert(prefix.to_string(), suffix.to_string());
+
+        let key = prefix.to_string();
+        let old_value = result.get(&key);
+        if old_value == None {
+            let value = suffix.to_string();
+            result.insert(key, value);
+        } else {
+            let value = old_value.unwrap().to_string() + " ::<sep_tzu>:: " + suffix;
+            result.insert(key, value);
+        };
     }
     return result;
 }
