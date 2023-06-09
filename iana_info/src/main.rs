@@ -79,11 +79,11 @@ fn print_help() {
     println!("Usage: iana_info --key <value> [--key <value>] ...");
     println!("");
     println!("Find info in the IANA Language Subtag Registry");
-    println!("");
+    println!("Filtering:");
     println!("  -add,    --added           <value> // yyyy-MM-dd");
     println!("  -dep,    --deprecated      <value> // yyyy-MM-dd");
     println!("  -cmt,    --comments        <value>");
-    println!("  -desc,   --description     <value>");
+    println!("  -d -desc --description     <value>");
     println!("  -macro,  --macrolanguage   <value>");
     println!("  -pref,   --preferred-value <value>");
     println!("  -px,     --prefix          <value>");
@@ -94,8 +94,18 @@ fn print_help() {
     println!("  -t,      --tag             <value>");
     println!("  -ty,     --type            <value>");
     println!("      one of: extlang, grandfathered, language, redundant, region, script, variant");
-    println!("--color=always   : force to always use colors");
-    println!("--color=never    : force to never use colors");
+    println!("Shorthands (for type=<option> & subtype / type=<value>):");
+    println!("  -el      --extlang         <value>");
+    println!("  -gf      --grandfathered   <value>");
+    println!("  -l       --language        <value>");
+    println!("  -red     --redundant       <value>");
+    println!("  -r       --region          <value>");
+    println!("  -s       --script          <value>");
+    println!("  -v       --variant         <value>");
+    println!("Other:");
+    println!("  --color=always   : force to always use colors");
+    println!("  --color=never    : force to never use colors");
+    println!("  -h       --help  : this help");
     println!("where the value can be a substring or exact match if it starts with '='");
     exit(1);
 }
@@ -105,8 +115,17 @@ fn args_to_map(args: Vec<String>) -> HashMap<String, String> {
     let mut key = "";
     for arg in &args {
         match arg.as_str() {
+            // Shorthands
+            "-el" | "--extlang"            => { result.insert("Type".to_string(), "=extlang".to_string());       key = "Subtag" },
+            "-gf" | "--grandfathered"      => { result.insert("Type".to_string(), "=grandfathered".to_string()); key = "Tag" },
+            "-l" | "--language"            => { result.insert("Type".to_string(), "=language".to_string());      key = "Subtag" },
+            "-red" | "--redundant"         => { result.insert("Type".to_string(), "=redundant".to_string());     key = "Tag" },
+            "-r" | "--region"              => { result.insert("Type".to_string(), "=region".to_string());        key = "Subtag" },
+            "-s" | "--script"              => { result.insert("Type".to_string(), "=script".to_string());        key = "Subtag" },
+            "-v" | "--variant"             => { result.insert("Type".to_string(), "=variant".to_string());       key = "Subtag" },
+
             "-add"   | "--added"           => key = "Added",
-            "-dep"   | "--deprecated"      => key = "Deprecated",
+            "-d" | "-dep" | "--deprecated" => key = "Deprecated",
             "-cmt"   | "--comments"        => key = "Comments",
             "-desc"  | "--description"     => key = "Description",
             "-macro" | "--macrolanguage"   => key = "Macrolanguage",
