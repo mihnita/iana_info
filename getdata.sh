@@ -1,5 +1,7 @@
-rd udata /s/q
-md udata
+#!/bin/bash
+
+rm -fr udata
+mkdir udata
 pushd udata
 
 wget https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
