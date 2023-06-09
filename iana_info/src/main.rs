@@ -81,19 +81,19 @@ fn print_help() {
     println!("");
     println!("Find info in the IANA Language Subtag Registry");
     println!("Filtering:");
-    println!("  -add,    --added           <value> // yyyy-MM-dd");
-    println!("  -dep,    --deprecated      <value> // yyyy-MM-dd");
-    println!("  -cmt,    --comments        <value>");
+    println!("  -add     --added           <value> // yyyy-MM-dd");
+    println!("  -dep     --deprecated      <value> // yyyy-MM-dd");
+    println!("  -cmt     --comments        <value>");
     println!("  -d -desc --description     <value>");
-    println!("  -macro,  --macrolanguage   <value>");
-    println!("  -pref,   --preferred-value <value>");
-    println!("  -px,     --prefix          <value>");
-    println!("  -scp,    --scope           <value>");
+    println!("  -mac     --macrolanguage   <value>");
+    println!("  -pref    --preferred-value <value>");
+    println!("  -px      --prefix          <value>");
+    println!("  -scp     --scope           <value>");
     println!("      one of: collection, macrolanguage, private-use, special");
-    println!("  -sub,    --subtag          <value>");
-    println!("  -ss,     --suppress-script <value>");
-    println!("  -t,      --tag             <value>");
-    println!("  -ty,     --type            <value>");
+    println!("  -stg     --subtag          <value>");
+    println!("  -ss      --suppress-script <value>");
+    println!("  -tg      --tag             <value>");
+    println!("  -t       --type            <value>");
     println!("      one of: extlang, grandfathered, language, redundant, region, script, variant");
     println!("Shorthands (for type=<option> & subtype / type=<value>):");
     println!("  -el      --extlang         <value>");
@@ -126,16 +126,16 @@ fn args_to_map(args: Vec<String>) -> HashMap<String, String> {
             "-v" | "--variant"             => { result.insert("Type".to_string(), "=variant".to_string());       key = "Subtag" },
 
             "-add"   | "--added"           => key = "Added",
-            "-d" | "-dep" | "--deprecated" => key = "Deprecated",
+            "-dep"   | "--deprecated"      => key = "Deprecated",
             "-cmt"   | "--comments"        => key = "Comments",
-            "-desc"  | "--description"     => key = "Description",
-            "-macro" | "--macrolanguage"   => key = "Macrolanguage",
+            "-d" | "-desc" | "--description" => key = "Description",
+            "-mac"   | "--macrolanguage"   => key = "Macrolanguage",
             "-pref"  | "--preferred-value" => key = "Preferred-Value",
             "-px"    | "--prefix"          => key = "Prefix",
             "-scp"   | "--scope"           => key = "Scope",
-            "-sub"   | "--subtag"          => key = "Subtag",
+            "-stg"   | "--subtag"          => key = "Subtag",
             "-ss"    | "--suppress-script" => key = "Suppress-Script",
-            "-ta"    | "--tag"             => key = "Tag",
+            "-tg"    | "--tag"             => key = "Tag",
             "-t"     | "--type"            => key = "Type",
             "--color=always"               => set_use_colors(true),
             "--color=never"                => set_use_colors(false),
@@ -144,6 +144,10 @@ fn args_to_map(args: Vec<String>) -> HashMap<String, String> {
                 if !key.is_empty() {
                     result.insert(key.to_string(), arg.to_string());
                     key = "";
+                } else {
+                    if arg.starts_with('-') {
+                        print_help();
+                    }
                 }
             },
         };
@@ -245,8 +249,5 @@ TODO:
     * find data path: next to exe, in folder next to exe, env variable, current folder, command line option
     * search
         * color the found text
-        * case insensitive search
-        * Tag (used in grandfathered) vs Subtag (used everywhere else)
-        * any field
     * Convert IANA file to json?
  */
