@@ -48,13 +48,14 @@ fn print_record(section: &Vec<String>, to_matchm: &HashMap<String, String>) {
     for (key, value) in to_matchm {
         let z = record.get(key);
         if z != None {
-            if value.starts_with("=") {
-                let to_find = &value.as_str()[1..];
-                if z.unwrap().eq(to_find) {
+            let searched = z.unwrap().to_uppercase();
+            let to_search = value.to_uppercase();
+            if to_search.starts_with("=") {
+                if searched.eq(&to_search[1..]) {
                     found_count = found_count + 1;
                 }
             } else {
-                if z.unwrap().contains(value) {
+                if searched.contains(&to_search) {
                     found_count = found_count + 1;
                 }
             }
