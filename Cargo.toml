@@ -1,2 +1,3 @@
 [workspace]
-members = ["iana_info", "unicode_info"]
+members = ["iana_info", "unicode_info", "checksum"]
+resolver = "2"
