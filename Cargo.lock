@@ -63,8 +63,17 @@ dependencies = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "itoa"
 version = "1.0.10"
+=======
+name = "java_class_info"
+version = "0.1.0"
+
+[[package]]
+name = "libc"
+version = "0.2.144"
+>>>>>>> 3018c53 (Added java_class_info)
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b1a46d1a171d865aa5f83f92695765caa047a9b4cbae2cbf37dbd613a793fd4c"
 
